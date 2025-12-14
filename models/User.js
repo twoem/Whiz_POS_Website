@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -34,10 +34,11 @@ const UserSchema = new mongoose.Schema({
   },
   backOfficeLink: String,
   backOfficeUsername: String,
+  backOfficePassword: String,
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+module.exports = mongoose.models.User || mongoose.model('User', UserSchema);

@@ -1,0 +1,99 @@
+<%- include('partials/header') %>
+
+<div class="pt-32 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold mb-8 text-gray-900">Admin Dashboard</h1>
+
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+       <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+          <h2 class="text-lg font-medium text-gray-900">Access Requests</h2>
+       </div>
+
+       <% if (users.length === 0) { %>
+         <div class="p-6 text-gray-500 text-center">No requests found.</div>
+       <% } else { %>
+         <div class="overflow-x-auto">
+           <table class="min-w-full divide-y divide-gray-200">
+             <thead class="bg-gray-50">
+               <tr>
+                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company / Contact</th>
+                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Info</th>
+                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Business Nature</th>
+                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+               </tr>
+             </thead>
+             <tbody class="bg-white divide-y divide-gray-200">
+               <% users.forEach(user => { %>
+                 <tr>
+                   <td class="px-6 py-4 whitespace-nowrap">
+                     <div class="text-sm font-medium text-gray-900"><%= user.contactPerson %></div>
+                     <div class="text-sm text-gray-500"><%= user.email %></div>
+                   </td>
+                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                     <%= user.phone %>
+                   </td>
+                   <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                     <%= user.natureOfBusiness %>
+                   </td>
+                   <td class="px-6 py-4 whitespace-nowrap">
+                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                       <%= user.status === 'approved' ? 'bg-green-100 text-green-800' :
+                          user.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                          'bg-yellow-100 text-yellow-800' %>">
+                       <%= user.status %>
+                     </span>
+                   </td>
+                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                     <% if (user.status === 'pending') { %>
+                        <button onclick="approveUser('<%= user._id %>')" class="text-emerald-600 hover:text-emerald-900 mr-4 font-bold">Approve</button>
+                        <button onclick="rejectUser('<%= user._id %>')" class="text-red-600 hover:text-red-900 font-bold">Reject</button>
+                     <% } else { %>
+                        <span class="text-gray-400">Processed</span>
+                     <% } %>
+                   </td>
+                 </tr>
+               <% }) %>
+             </tbody>
+           </table>
+         </div>
+       <% } %>
+    </div>
+</div>
+
+<script>
+async function approveUser(userId) {
+    const link = prompt("Enter Back Office Link:", "https://backoffice.whizpos.com");
+    if(!link) return;
+    const username = prompt("Enter Username/Business ID:", "BIZ-" + Math.floor(Math.random()*10000));
+    if(!username) return;
+    const password = prompt("Enter Temporary Password:", "secret123");
+    if(!password) return;
+
+    await submitVerification(userId, 'approved', link, username, password);
+}
+
+async function rejectUser(userId) {
+    if(confirm("Are you sure you want to reject this user?")) {
+        await submitVerification(userId, 'rejected');
+    }
+}
+
+async function submitVerification(userId, status, backOfficeLink='', backOfficeUsername='', backOfficePassword='') {
+    try {
+        const response = await fetch('/admin/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, status, backOfficeLink, backOfficeUsername, backOfficePassword })
+        });
+        if(response.redirected) {
+            window.location.href = response.url;
+        } else {
+             window.location.reload();
+        }
+    } catch (e) {
+        alert('Error processing request');
+    }
+}
+</script>
+
+<%- include('partials/footer') %>

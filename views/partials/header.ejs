@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whiz POS</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 flex flex-col min-h-screen">
+    <nav class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-blue-600">Whiz POS</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium hover:text-blue-600 transition-colors">Home</a>
+                        <a href="/windows" class="px-3 py-2 rounded-md text-sm font-medium hover:text-blue-600 transition-colors">Windows POS</a>
+                        <a href="/mobile" class="px-3 py-2 rounded-md text-sm font-medium hover:text-blue-600 transition-colors">Mobile App</a>
+                        <a href="/backoffice" class="px-3 py-2 rounded-md text-sm font-medium hover:text-blue-600 transition-colors">Back Office</a>
+                        <% if (user) { %>
+                            <span class="text-sm font-medium text-gray-500">Hi, <%= user.contactPerson.split(' ')[0] %></span>
+                            <a href="/auth/logout" class="px-3 py-2 rounded-md text-sm font-medium text-red-500 hover:text-red-700">Logout</a>
+                        <% } else { %>
+                            <a href="/login" class="px-3 py-2 rounded-md text-sm font-medium text-emerald-600 hover:text-emerald-700">Login</a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <main class="flex-grow pt-16">
