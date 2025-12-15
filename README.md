@@ -30,6 +30,31 @@ The official website for Whiz POS, built with **Node.js**, **Express**, and **EJ
         ```
     - Update `MONGODB_URI` and other variables in `.env`.
 
+## Environment Variables
+
+Ensure your `.env` file contains the following keys:
+
+```ini
+# Database Connection
+MONGODB_URI=mongodb://localhost:27017/whizpos
+
+# Security
+JWT_SECRET=your_secure_random_secret_key
+
+# Download Links
+DOWNLOAD_LINK_WINDOWS=https://example.com/download/windows-installer.exe
+NEXT_PUBLIC_DOWNLOAD_LINK_APK=https://example.com/download/mobile-app.apk
+
+# Admin Configuration (Auto-seeded on startup)
+ADMIN_EMAIL=admin@whizpos.com
+ADMIN_NAME=System Admin
+ADMIN_PASSWORD=secure_password
+NEXT_PUBLIC_ADMIN_PHONE=0740841168
+
+# Server
+PORT=3000
+```
+
 ## Running the Application
 
 ### Development
