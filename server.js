@@ -3,16 +3,56 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const User = require('./models/User');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Database Connection
+// Database Connection & Admin Seeding
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB Connected'))
+  .then(async () => {
+    console.log('MongoDB Connected');
+    await seedAdmin();
+  })
   .catch(err => console.error('MongoDB Connection Error:', err));
+
+async function seedAdmin() {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminName = process.env.ADMIN_NAME || 'System Admin';
+  const adminPhone = process.env.NEXT_PUBLIC_ADMIN_PHONE || '0000000000';
+
+  if (!adminEmail || !adminPassword) {
+    console.log('Admin seeding skipped: ADMIN_EMAIL or ADMIN_PASSWORD not set.');
+    return;
+  }
+
+  try {
+    const existingAdmin = await User.findOne({ email: adminEmail });
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await User.create({
+        email: adminEmail,
+        password: hashedPassword,
+        contactPerson: adminName,
+        phone: adminPhone,
+        natureOfBusiness: 'Administration',
+        role: 'admin',
+        status: 'approved'
+      });
+      console.log(`Admin account created: ${adminEmail}`);
+    } else {
+      // Optional: Update admin role/status if they exist but aren't admin?
+      // For now, just log.
+      console.log('Admin account already exists.');
+    }
+  } catch (error) {
+    console.error('Error seeding admin:', error);
+  }
+}
 
 // Middleware
 app.use(express.json());
