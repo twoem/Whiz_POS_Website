@@ -53,9 +53,9 @@
                      <% } else { %>
                         <span class="text-gray-400">Processed</span>
                         <button onclick="approveUser('<%= user._id %>')" class="text-blue-600 hover:text-blue-900 ml-2 text-xs">Edit</button>
-                        <button onclick="resetUserPassword('<%= user._id %>')" class="text-orange-600 hover:text-orange-900 ml-2 text-xs">Reset Password</button>
-                     <% } else if (user.status === 'approved') { %>
-                        <button onclick="resetUserPassword('<%= user._id %>')" class="text-orange-600 hover:text-orange-900 ml-2 text-xs">Reset Password</button>
+                        <% if (user.status === 'approved') { %>
+                            <button onclick="resetUserPassword('<%= user._id %>')" class="text-orange-600 hover:text-orange-900 ml-2 text-xs">Reset Password</button>
+                        <% } %>
                      <% } %>
                    </td>
                  </tr>
