@@ -42,13 +42,20 @@
                           'bg-yellow-100 text-yellow-800' %>">
                        <%= user.status %>
                      </span>
+                     <% if (user.reviewRequested) { %>
+                        <div class="mt-1 text-xs text-orange-600 font-bold">Review Requested</div>
+                     <% } %>
                    </td>
                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                     <% if (user.status === 'pending') { %>
+                     <% if (user.status === 'pending' || user.reviewRequested) { %>
                         <button onclick="approveUser('<%= user._id %>')" class="text-emerald-600 hover:text-emerald-900 mr-4 font-bold">Approve</button>
                         <button onclick="rejectUser('<%= user._id %>')" class="text-red-600 hover:text-red-900 font-bold">Reject</button>
                      <% } else { %>
                         <span class="text-gray-400">Processed</span>
+                        <button onclick="approveUser('<%= user._id %>')" class="text-blue-600 hover:text-blue-900 ml-2 text-xs">Edit</button>
+                        <button onclick="resetUserPassword('<%= user._id %>')" class="text-orange-600 hover:text-orange-900 ml-2 text-xs">Reset Password</button>
+                     <% } else if (user.status === 'approved') { %>
+                        <button onclick="resetUserPassword('<%= user._id %>')" class="text-orange-600 hover:text-orange-900 ml-2 text-xs">Reset Password</button>
                      <% } %>
                    </td>
                  </tr>
@@ -73,17 +80,39 @@ async function approveUser(userId) {
 }
 
 async function rejectUser(userId) {
-    if(confirm("Are you sure you want to reject this user?")) {
-        await submitVerification(userId, 'rejected');
+    const reason = prompt("Enter reason for rejection:", "Application requirements not met.");
+    if(reason === null) return; // Cancelled
+
+    await submitVerification(userId, 'rejected', '', '', '', reason);
+}
+
+async function resetUserPassword(userId) {
+    const newPassword = prompt("Enter new password for user:");
+    if (!newPassword) return;
+
+    try {
+        const response = await fetch('/admin/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, newPassword })
+        });
+
+        if (response.ok) {
+            alert('Password reset successfully.');
+        } else {
+            alert('Failed to reset password.');
+        }
+    } catch (e) {
+        alert('Error resetting password');
     }
 }
 
-async function submitVerification(userId, status, backOfficeLink='', backOfficeUsername='', backOfficePassword='') {
+async function submitVerification(userId, status, backOfficeLink='', backOfficeUsername='', backOfficePassword='', rejectionReason='') {
     try {
         const response = await fetch('/admin/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, status, backOfficeLink, backOfficeUsername, backOfficePassword })
+            body: JSON.stringify({ userId, status, backOfficeLink, backOfficeUsername, backOfficePassword, rejectionReason })
         });
         if(response.redirected) {
             window.location.href = response.url;

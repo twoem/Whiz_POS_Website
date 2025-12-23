@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/mburuwhiz/Whiz_POS_Website#readme",
   "dependencies": {
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
