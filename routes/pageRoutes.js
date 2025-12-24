@@ -11,6 +11,7 @@ router.get('/mobile', (req, res) => res.render('mobile'));
 router.get('/backoffice', (req, res) => res.render('backoffice'));
 router.get('/login', (req, res) => res.render('login', { error: null }));
 router.get('/request-access', (req, res) => res.render('register', { error: null }));
+router.get('/register', (req, res) => res.redirect('/request-access'));
 
 // Protected Download Route
 router.get('/download/windows', requireAuth, async (req, res) => {
